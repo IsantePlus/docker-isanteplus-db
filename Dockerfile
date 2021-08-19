@@ -4,7 +4,7 @@ FROM alpine/git as download
 
 WORKDIR /
 
-RUN git clone https://github.com/IsantePlus/openmrs-distro-isanteplus
+RUN git clone --depth 1 --branch ${ISANTEPLUS_VERSION} https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
 WORKDIR /db
 
