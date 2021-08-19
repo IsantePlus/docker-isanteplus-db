@@ -7,14 +7,14 @@ on:
     types: [published]
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   deploy:
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
-    env:
-      ISANTEPLUS_VERSION: 2.8.0
-      USERNAME: ${{ secrets.RELEASE_USERNAME }}
-      TOKEN: ${{ secrets.RELEASE_TOKEN }}
     steps:
       -
         name: Checkout code
