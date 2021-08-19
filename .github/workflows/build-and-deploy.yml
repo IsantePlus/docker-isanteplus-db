@@ -1,0 +1,48 @@
+# For every commit or tag that is pushed, but image from it and push this to docker hub
+
+name: Build and Deploy
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    env:
+      ISANTEPLUS_VERSION: 2.8.0
+      USERNAME: ${{ secrets.RELEASE_USERNAME }}
+      TOKEN: ${{ secrets.RELEASE_TOKEN }}
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.RELEASE_USERNAME }}
+          password: ${{ secrets.RELEASE_TOKEN }}
+      - name: Push isanteplus to GitHub Packages
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./openmrs-server/Dockerfile
+          cache-from: type=registry,ref=isanteplus/isanteplus-packages/isanteplus-server:latest
+          cache-to: type=inline
+          tags: isanteplus/isanteplus-packages/isanteplus-server:latest
+      - name: Push isanteplus-mysql to GitHub Packages
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./db/Dockerfile
+          cache-from: type=registry,ref=isanteplus/isanteplus-packages/isanteplus-db:latest
+          cache-to: type=inline
+          tags: isanteplus/isanteplus-packages/isanteplus-db:latest
+          labels: ${{ steps.meta.outputs.labels }}
