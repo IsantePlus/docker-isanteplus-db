@@ -98,7 +98,7 @@ RUN { \
 VOLUME /var/lib/mysql
 
 # Add Dockerfile and commit info for documentation
-ADD ./db/Dockerfile /openmrs/docker
+ADD ./Dockerfile /openmrs/docker
 
 COPY ./resources/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
