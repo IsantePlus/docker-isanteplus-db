@@ -4,7 +4,7 @@ FROM alpine/git as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=main
+ARG ISANTEPLUS_VERSION=v2.0.0-SNAPSHOT-2
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 

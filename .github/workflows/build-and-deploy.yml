@@ -13,7 +13,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ISANTEPLUS_VERSION: main
 
 jobs:
   deploy:
@@ -45,7 +44,5 @@ jobs:
         with:
           context: .
           push: true
-          build-args: |
-            ISANTEPLUS_VERSION=${{ env.ISANTEPLUS_VERSION }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
