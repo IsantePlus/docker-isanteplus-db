@@ -4,15 +4,15 @@ FROM alpine/git as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=v2.0.1
+ARG ISANTEPLUS_VERSION=v2.0.2
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
 WORKDIR /db
 
-RUN mv /openmrs-distro-isanteplus/package/src/main/resources/isanteplus-concepts.sql /db/
+RUN mv /openmrs-distro-isanteplus/package/src/main/resources/isanteplus-concepts.sql /db/02.sql
 
-RUN mv /openmrs-distro-isanteplus/package/src/main/resources/initial-db.sql /db/
+RUN mv /openmrs-distro-isanteplus/package/src/main/resources/initial-db.sql /db/01.sql
 
 FROM debian:buster-slim as db
 
