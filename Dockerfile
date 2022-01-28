@@ -4,7 +4,7 @@ FROM alpine/git as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=pmanko-patch-isanteplus-version
+ARG ISANTEPLUS_VERSION=pmanko-patch-isanteplus-update
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
