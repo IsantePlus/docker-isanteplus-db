@@ -1,12 +1,16 @@
 # Customized from official MySQL Dockerfile and docker-entrypoint.sh: 
 # 	https://github.com/docker-library/mysql/tree/c506174eab8ae160f56483e8d72410f8f1e1470f/8.0
-FROM alpine/git as download
+FROM maven:3.6-jdk-8 as download
 
 WORKDIR /
 
 ARG ISANTEPLUS_VERSION=pmanko-patch-isanteplus-update
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
+
+WORKDIR /openmrs-distro-isantelus
+
+RUN mvn generate-resources
 
 WORKDIR /db
 
