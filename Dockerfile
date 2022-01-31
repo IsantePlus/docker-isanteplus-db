@@ -4,7 +4,7 @@ FROM maven:3.6-jdk-8 as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=pmanko-patch-isanteplus-update
+ARG ISANTEPLUS_VERSION=v2.2.1
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
