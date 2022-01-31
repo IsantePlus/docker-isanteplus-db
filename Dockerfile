@@ -1,21 +1,24 @@
 # Customized from official MySQL Dockerfile and docker-entrypoint.sh: 
 # 	https://github.com/docker-library/mysql/tree/c506174eab8ae160f56483e8d72410f8f1e1470f/8.0
-FROM alpine/git as download
+FROM maven:3.6-jdk-8 as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=v2.0.2
+ARG ISANTEPLUS_VERSION=v2.2.1
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
+WORKDIR /openmrs-distro-isanteplus
+
+RUN mvn generate-resources
+
 WORKDIR /db
 
-RUN mv /openmrs-distro-isanteplus/package/src/main/resources/isanteplus-concepts.sql /db/02.sql
-
-RUN mv /openmrs-distro-isanteplus/package/src/main/resources/initial-db.sql /db/01.sql
+RUN mv /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql /db
 
 FROM debian:buster-slim as db
 
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
@@ -23,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends gnupg dirmngr &
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.12
+ENV GOSU_VERSION 1.14
 RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
@@ -44,6 +47,8 @@ RUN set -eux; \
 	gosu --version; \
 	gosu nobody true
 
+RUN mkdir /docker-entrypoint-initdb.d
+
 COPY --from=download /db/* /docker-entrypoint-initdb.d/
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -62,8 +67,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
-# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
+# gpg: key 3A79BD29: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
+	key='859BE8D7C586F538430B19C2467B942D3A79BD29'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 	gpg --batch --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
@@ -72,7 +77,7 @@ RUN set -ex; \
 	apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.36-1debian10
+ENV MYSQL_VERSION 5.7.37-1debian10
 
 RUN echo 'deb http://repo.mysql.com/apt/debian/ buster mysql-5.7' > /etc/apt/sources.list.d/mysql.list
 
