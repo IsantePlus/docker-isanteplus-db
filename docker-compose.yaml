@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   mysql:
+    image: ghcr.io/isanteplus/docker-isanteplus-db:latest
     build:
       context: ./
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
@@ -19,13 +20,11 @@ services:
       - MYSQL_ROOT_HOST=%    # Allow docker containers to connect to mysql
     volumes:
       - ./resources/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
-      - data:/var/lib/mysql
-    networks:
-      - isanteplus
+      - /var/lib/mysql
     
   isanteplus:
     restart: unless-stopped
-    image: some
+    image: ghcr.io/isanteplus/docker-isanteplus-server:latest
     container_name: isanteplus
     hostname: isanteplus
     ports:
@@ -47,14 +46,7 @@ services:
       JPDA_TRANSPORT: dt_socket
       OMRS_DEV_DEBUG_PORT: 8000
     volumes:
-      - openmrs-data:/openmrs/data
-    networks:
-      - isanteplus
+      - /openmrs/data
 
-networks:
-  isanteplus:
-volumes:
-  data:
-  openmrs-data:
 
 
