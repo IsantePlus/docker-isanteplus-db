@@ -4,7 +4,7 @@ FROM maven:3.6-jdk-8 as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=v2.2.1
+ARG ISANTEPLUS_VERSION=platform_2.1.x
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
@@ -12,9 +12,28 @@ WORKDIR /openmrs-distro-isanteplus
 
 RUN mvn generate-resources
 
+WORKDIR / 
+
+RUN git clone --depth 1 https://github.com/IsantePlus/etlscript.git
+
 WORKDIR /db
 
-RUN mv /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql /db
+# rename the files with numbers to control the order of execution
+RUN mv /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql /db/1.sql
+
+RUN mv /etlscript/sql_files/isanteplusreportsddlscript.sql /db/2.sql
+
+RUN mv /etlscript/sql_files/isanteplusreportsdmlscript.sql /db/3.sql
+
+RUN mv /etlscript/sql_files/drug_lookup_isanteplus.sql /db/4.sql
+
+RUN mv /etlscript/sql_files/run_isante_patient_status.sql /db/5.sql
+
+RUN mv /etlscript/sql_files/insertion_obs_by_day.sql /db/6.sql
+
+RUN mv /etlscript/sql_files/patient_status_arv_dml.sql /db/7.sql
+
+RUN mv /etlscript/sql_files/indicators_report.sql /db/8.sql
 
 FROM debian:buster-slim as db
 
