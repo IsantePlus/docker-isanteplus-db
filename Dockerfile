@@ -4,7 +4,7 @@ FROM maven:3.6-jdk-8 as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=v2.2.1
+ARG ISANTEPLUS_VERSION=platform_2.1.x
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
@@ -14,7 +14,7 @@ RUN mvn generate-resources
 
 WORKDIR /db
 
-RUN mv /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql /db
+RUN mv /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql /db/
 
 FROM debian:buster-slim as db
 
