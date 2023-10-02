@@ -77,7 +77,7 @@ RUN set -ex; \
 	apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.37-1debian10
+ENV MYSQL_VERSION 5.7.37-0ubuntu0.18.04.1
 
 RUN echo 'deb http://repo.mysql.com/apt/debian/ buster mysql-5.7' > /etc/apt/sources.list.d/mysql.list
 
@@ -91,7 +91,7 @@ RUN { \
 	} | debconf-set-selections \
 	&& apt-get update \
 	&& apt-get install -y \
-		mysql-server="${MYSQL_VERSION}" \
+		mysql-server-5.7="${MYSQL_VERSION}" \
 # comment out a few problematic configuration values
 	&& find /etc/mysql/ -name '*.cnf' -print0 \
 		| xargs -0 grep -lZE '^(bind-address|log)' \
