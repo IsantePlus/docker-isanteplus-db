@@ -78,8 +78,12 @@ RUN set -ex; \
 
 ENV MYSQL_MAJOR 5.7
 ENV MYSQL_VERSION 5.7.37-0ubuntu0.18.04.1
-
-RUN echo 'deb http://repo.mysql.com/apt/debian/ buster mysql-5.7' > /etc/apt/sources.list.d/mysql.list
+RUN apt update
+RUN apt install software-properties-common
+#RUN echo 'deb http://repo.mysql.com/apt/debian/ buster mysql-5.7' > /etc/apt/sources.list.d/mysql.list
+RUN add-apt-repository 'deb http://repo.mysql.com/apt/ubuntu/ bionic mysql-5.7'
+RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.17-1_all.deb
+RUN dpkg -i mysql-apt-config_0.8.17-1_all.deb
 
 # the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
 # also, we set debconf keys to make APT a little quieter
@@ -91,7 +95,7 @@ RUN { \
 	} | debconf-set-selections \
 	&& apt-get update \
 	&& apt-get install -y \
-		mysql-server-5.7="${MYSQL_VERSION}" \
+		mysql-server \
 # comment out a few problematic configuration values
 	&& find /etc/mysql/ -name '*.cnf' -print0 \
 		| xargs -0 grep -lZE '^(bind-address|log)' \
