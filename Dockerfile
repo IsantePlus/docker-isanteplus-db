@@ -4,7 +4,7 @@ FROM maven:3.6-jdk-8 as download
 
 WORKDIR /
 
-ARG ISANTEPLUS_VERSION=v2.2.1
+ARG ISANTEPLUS_VERSION=updateInitialDb
 
 RUN git clone --depth 1 --branch $ISANTEPLUS_VERSION https://github.com/IsantePlus/openmrs-distro-isanteplus.git
 
@@ -13,6 +13,10 @@ WORKDIR /openmrs-distro-isanteplus
 RUN mvn generate-resources
 
 WORKDIR /db
+
+RUN unzip /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql.zip 
+
+RUN rm /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql.zip
 
 RUN mv /openmrs-distro-isanteplus/package/src/main/resources/openmrs-distro.sql /db
 
@@ -77,7 +81,7 @@ RUN set -ex; \
 	apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.37-1debian10
+ENV MYSQL_VERSION 5.7.42-1debian10
 
 RUN echo 'deb http://repo.mysql.com/apt/debian/ buster mysql-5.7' > /etc/apt/sources.list.d/mysql.list
 
